@@ -1,2 +1,4 @@
-**/pycache
+**/__pycache__
 .mypy_cache
+LP
+*.pdf

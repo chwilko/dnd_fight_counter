@@ -19,5 +19,3 @@ fill "MYPY" "*"
 poetry run mypy $1
 fill "FLAKE8" "*"
 poetry run flake8 $1
-fill "PYLINT" "*"
-poetry run pylint $1

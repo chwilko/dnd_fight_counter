@@ -3,4 +3,4 @@ YOU:
 
 lint:
 	bash lint.sh fight_counter
-	bash lint.sh fit_unknown_challenge_xp.ipynb
+	bash lint.sh tests
