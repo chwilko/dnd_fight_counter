@@ -1,25 +1,13 @@
 import json
 import os
-from typing import Dict, List, Optional, TypedDict
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import linprog
 
-from .enums import DifficultyLevelChoose
-
-
-class EnemiesDict(TypedDict):
-    number: int
-    xp: int
-    challenge: float
-
-
-class WaveDict(TypedDict):
-    enemies: List[EnemiesDict]
-    xp: int
-    expected_xp: int
-    number: int
+from fight_counter.dicts import EnemiesDict, WaveDict
+from fight_counter.enums import DifficultyLevelChoose
 
 
 class FightCounter:
@@ -28,7 +16,9 @@ class FightCounter:
     CHALLENGE_XP_CSV = os.path.join("fight_counter", "data", "challenge_xp.csv")
 
     def __init__(
-        self, players: List[int], difficulty_level: DifficultyLevelChoose
+        self,
+        players: List[int],
+        difficulty_level: DifficultyLevelChoose,
     ) -> None:
         self._players = players or [1]
         self._difficulty_level = difficulty_level
@@ -36,7 +26,20 @@ class FightCounter:
         self._base_exp = self._count_base_exp()
         self._challenge_xp = None
 
-    def get_base_exp(self):
+    @staticmethod
+    def simplify(
+        counted_waves: List[WaveDict],
+    ) -> List[List[float]]:
+        enemies = []
+        for wave in counted_waves:
+            simplified = [wave["xp"] / float(wave["expected_xp"])]
+            for enemy in wave["enemies"]:
+                for _ in range(enemy["number"]):
+                    simplified.append(enemy["challenge"])
+            enemies.append(simplified)
+        return enemies
+        
+    def get_base_exp(self) -> int:
         return self._base_exp
 
     @property
@@ -44,6 +47,20 @@ class FightCounter:
         if self._challenge_xp is None:
             self._challenge_xp = pd.read_csv(self.CHALLENGE_XP_CSV)
         return self._challenge_xp
+
+    def count_distribution(
+        self,
+        enemies_numbers: Optional[List[int]] = None,
+    ) -> List[WaveDict]:
+        enemies_numbers = enemies_numbers or list(range(1, 11))
+        enemies: List[WaveDict] = []
+
+        for number in enemies_numbers:
+            clash_factor = self._get_clash_factor(number)
+            enemies.append(self._get_wave_data(number, clash_factor))
+
+        return enemies
+
 
     def _get_clash_data(self) -> Dict[float, List[int]]:
         with open(self.CLASH_DATA_JSON, "r") as f:
@@ -77,18 +94,8 @@ class FightCounter:
             ].iloc[0]
         return xp
 
-    def count_distribution(self, enemies_numbers: Optional[List[int]] = None):
-        enemies_numbers = enemies_numbers or list(range(1, 11))
-        enemies: List[WaveDict] = []
-
-        for number in enemies_numbers:
-            clash_factor = self._get_clash_factor(number)
-            enemies.append(self._get_wave_data(number, clash_factor))
-
-        return (enemies,)
-
-    def _get_wave_data(self, number: int, clash_factor: float):
-        xp = int(self._base_exp * clash_factor)
+    def _get_wave_data(self, number: int, clash_factor: float) -> WaveDict:
+        xp = int(self._base_exp // clash_factor)
 
         minimizer_vec = self.challenge_xp["xp"].to_numpy()
         challenge_xp = np.array([minimizer_vec])
