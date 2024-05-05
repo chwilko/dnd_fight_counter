@@ -96,11 +96,15 @@ def generate_plot():
             label=f"Difficult: {DifficultyLevelChoose.DEADLY}",
         )
 
-        plt.plot([0.5], [difficulty.enemies_xp], "*", c="k")
+        plt.plot(
+            [0.5], [difficulty.enemies_xp], "*", c="k", label=f"{difficulty.enemies_xp}"
+        )
 
         plt.xlim(X)
         plt.ylim(ylim)
-        plt.ylabel("difficulty")
+        plt.ylabel("scaled xp")
+        plt.xticks([])
+        plt.yticks(sorted(difficulty.difficulty_thresholds.values()))
         plt.legend()
         plt.title(f"Real fight xp: {difficulty.real_enemies_xp}")
 

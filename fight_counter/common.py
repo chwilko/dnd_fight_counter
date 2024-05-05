@@ -34,3 +34,4 @@ class WaveDict(TypedDict):
     xp: int
     expected_xp: int
     number: int
+    clash_factor: float

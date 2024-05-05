@@ -63,7 +63,7 @@ def difficulty_counter(
     enemies_xp = get_enemies_exp(enemies)
     real_enemies_xp = enemies_xp
     clash_factor = get_clash_factor(
-        n_players=len(players),
+        players_number=len(players),
         enemies_number=len(enemies),
         clash_data=clash_data,
     )

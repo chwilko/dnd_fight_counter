@@ -14,7 +14,6 @@ from fight_counter.utils import (
 
 
 class FightCounter:
-
     def __init__(
         self,
         players: List[int],
@@ -32,7 +31,7 @@ class FightCounter:
     ) -> List[List[float]]:
         enemies = []
         for wave in counted_waves:
-            simplified = [wave["xp"] / float(wave["expected_xp"])]
+            simplified = [round(wave["xp"] / float(wave["expected_xp"]), 3)]
             for enemy in wave["enemies"]:
                 for _ in range(enemy["number"]):
                     simplified.append(enemy["challenge"])
@@ -66,7 +65,7 @@ class FightCounter:
 
     def _get_clash_factor(self, enemies_number: int) -> float:
         return get_clash_factor(
-            n_players=len(self._players),
+            players_number=len(self._players),
             enemies_number=enemies_number,
             clash_data=self.clash_data,
         )
@@ -107,6 +106,7 @@ class FightCounter:
         return WaveDict(
             enemies=enemies,
             number=number,
-            xp=res.x.astype(int) @ self.challenge_xp["xp"].to_numpy(),
+            xp=res.x.round().astype(int) @ self.challenge_xp["xp"].to_numpy(),
             expected_xp=xp,
+            clash_factor=clash_factor,
         )
