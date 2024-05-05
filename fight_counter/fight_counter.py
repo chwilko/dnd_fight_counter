@@ -1,19 +1,19 @@
-import json
-import os
 from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import linprog
 
-from fight_counter.dicts import EnemiesDict, WaveDict
-from fight_counter.enums import DifficultyLevelChoose
+from fight_counter.common import DifficultyLevelChoose, EnemiesDict, WaveDict
+from fight_counter.utils import (
+    get_challenge_xp,
+    get_clash_data,
+    get_clash_factor,
+    get_expected_xp,
+)
 
 
 class FightCounter:
-    EXPECTED_EXP_CSV = os.path.join("fight_counter", "data", "pd_levels.csv")
-    CLASH_DATA_JSON = os.path.join("fight_counter", "data", "clash_data.json")
-    CHALLENGE_XP_CSV = os.path.join("fight_counter", "data", "challenge_xp.csv")
 
     def __init__(
         self,
@@ -23,7 +23,7 @@ class FightCounter:
         self._players = players or [1]
         self._difficulty_level = difficulty_level
         self.clash_data = self._get_clash_data()
-        self._base_exp = self._count_base_exp()
+        self._base_xp = self._count_base_xp()
         self._challenge_xp = None
 
     @staticmethod
@@ -38,14 +38,14 @@ class FightCounter:
                     simplified.append(enemy["challenge"])
             enemies.append(simplified)
         return enemies
-        
-    def get_base_exp(self) -> int:
-        return self._base_exp
+
+    def get_base_xp(self) -> int:
+        return self._base_xp
 
     @property
     def challenge_xp(self) -> pd.DataFrame:
         if self._challenge_xp is None:
-            self._challenge_xp = pd.read_csv(self.CHALLENGE_XP_CSV)
+            self._challenge_xp = get_challenge_xp()
         return self._challenge_xp
 
     def count_distribution(
@@ -61,32 +61,18 @@ class FightCounter:
 
         return enemies
 
-
     def _get_clash_data(self) -> Dict[float, List[int]]:
-        with open(self.CLASH_DATA_JSON, "r") as f:
-            clash_data = dict(
-                ((float(key), val) for key, val in json.loads(f.read()).items())
-            )
-        return clash_data
+        return get_clash_data()
 
     def _get_clash_factor(self, enemies_number: int) -> float:
-        factor = 4.0
-        for key, list_val in self.clash_data.items():
-            if enemies_number in list_val:
-                factor = key
-        n_players = len(self._players)
-        if n_players < 3:
-            if factor == 1.0:
-                return 0.5
-            return max([i for i in self.clash_data.keys() if i < factor])
-        if n_players >= 6:
-            if factor == 4.0:
-                return 5.0
-            return min([i for i in self.clash_data.keys() if i > factor])
-        return factor
+        return get_clash_factor(
+            n_players=len(self._players),
+            enemies_number=enemies_number,
+            clash_data=self.clash_data,
+        )
 
-    def _count_base_exp(self) -> int:
-        exp_table = pd.read_csv(self.EXPECTED_EXP_CSV)
+    def _count_base_xp(self) -> int:
+        exp_table = get_expected_xp()
         xp = 0
         for player_level in self._players:
             xp += exp_table.loc[
@@ -95,7 +81,7 @@ class FightCounter:
         return xp
 
     def _get_wave_data(self, number: int, clash_factor: float) -> WaveDict:
-        xp = int(self._base_exp // clash_factor)
+        xp = int(float(self._base_xp) // clash_factor)
 
         minimizer_vec = self.challenge_xp["xp"].to_numpy()
         challenge_xp = np.array([minimizer_vec])

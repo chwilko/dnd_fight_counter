@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generowanie wykresu</title>
+</head>
+<body>
+    <h2>Enter character levels and enemy difficulty levels:</h2>
+    <form action="{{ url_for('generate_plot') }}" method="post">
+        <label for="players">Enter character levels :</label>
+        <input type="text" id="players" name="players" required><br><br>
+        
+        <label for="enemies">Enter difficulty levels of enemies:</label>
+        <input type="text" id="enemies" name="enemies" required><br><br>
+        
+        <input type="submit" value="Count difficulty.">
+    </form>
+
+    <div id="plot_container">
+        {% if plot_image %}
+        <img id="plot_image" src="data:image/png;base64,{{ plot_image }}" alt="Wykres">
+        {% endif %}
+    </div>
+
+
+    <script>
+
+
+        function insertPlotImage(plotImage) {
+            var plotImg = document.getElementById("plot_image");
+            plotImg.src = "data:image/png;base64," + plotImage;
+        }
+
+        function generatePlot() {
+            var xValues = document.getElementById("players").value;
+            var yValues = document.getElementById("enemies").value;
+            var formData = new FormData();
+            formData.append('players', xValues);
+            formData.append('enemies', yValues);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/generate_plot', true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    insertPlotImage(xhr.responseText);
+                }
+            };
+            xhr.send(formData);
+        }
+
+        window.onload = function () {
+            var xValuesInput = document.getElementById("players");
+            var yValuesInput = document.getElementById("enemies");
+
+            function saveValues() {
+                sessionStorage.setItem("players", xValuesInput.value);
+                sessionStorage.setItem("enemies", yValuesInput.value);
+            }
+
+            var savedXValues = sessionStorage.getItem("players");
+            var savedYValues = sessionStorage.getItem("enemies");
+            if (savedXValues !== null) {
+                xValuesInput.value = savedXValues;
+            }
+            if (savedYValues !== null) {
+                yValuesInput.value = savedYValues;
+            }
+
+            xValuesInput.addEventListener("change", saveValues);
+            yValuesInput.addEventListener("change", saveValues);
+        };
+    </script>
+</body>
+</html>
