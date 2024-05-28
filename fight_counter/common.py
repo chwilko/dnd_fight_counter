@@ -35,3 +35,11 @@ class WaveDict(TypedDict):
     expected_xp: int
     number: int
     clash_factor: float
+
+
+COLORS = {
+    DifficultyLevelChoose.EASY: "green",
+    DifficultyLevelChoose.COMMON: "yellow",
+    DifficultyLevelChoose.HARD: "orange",
+    DifficultyLevelChoose.DEADLY: "red",
+}

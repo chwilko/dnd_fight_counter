@@ -15,21 +15,42 @@
         <input type="submit" value="Count difficulty.">
     </form>
 
-    <div id="plot_container">
+    <!-- <div id="plot_container">
         {% if plot_image %}
         <img id="plot_image" src="data:image/png;base64,{{ plot_image }}" alt="Wykres">
         {% endif %}
-    </div>
+    </div> -->
+    <!-- <div id="stats_container">
+        {% if stats_plot %}
+        <img id="stats_plot" src="data:image/png;base64,{{ stats_plot }}" alt="Wykres">
+        {% endif %}
+    </div> -->
 
+    <div class="clearfix">
+        <div id="plot_container">
+            {% if plot_image %}
+            <img id="plot_image" src="data:image/png;base64,{{ plot_image }}" alt="Wykres">
+            {% endif %}
+        </div>
+        <div id="stats_container">
+            {% if stats_plot %}
+            <img id="stats_plot" src="data:image/png;base64,{{ stats_plot }}" alt="Wykres">
+            {% endif %}
+        </div>
+    </div>
 
     <script>
 
 
-        function insertPlotImage(plotImage) {
-            var plotImg = document.getElementById("plot_image");
-            plotImg.src = "data:image/png;base64," + plotImage;
-        }
+        // function insertPlotImage(plotImage) {
+        //     var plotImg = document.getElementById("plot_image");
+        //     plotImg.src = "data:image/png;base64," + plotImage;
+        // }
 
+        // function insertStatsPlotImage(plotImage) {
+        //     var plotImg = document.getElementById("plot_image");
+        //     plotImg.src = "data:image/png;base64," + plotImage;
+        // }
         function generatePlot() {
             var xValues = document.getElementById("players").value;
             var yValues = document.getElementById("enemies").value;
@@ -38,11 +59,11 @@
             formData.append('enemies', yValues);
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/generate_plot', true);
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    insertPlotImage(xhr.responseText);
-                }
-            };
+            // xhr.onload = function () {
+            //     if (xhr.status === 200) {
+            //         insertPlotImage(xhr.responseText);
+            //     }
+            // };
             xhr.send(formData);
         }
 
@@ -69,4 +90,16 @@
         };
     </script>
 </body>
+
 </html>
+<style>
+    #plot_container, #stats_container {
+        float: left;
+        margin-right: 10px;
+    }
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
