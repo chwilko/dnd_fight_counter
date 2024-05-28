@@ -8,10 +8,12 @@ CLASH_DATA = get_clash_data()
 @pytest.mark.parametrize(
     "enemies_number,players_number,expected_clash_factor",
     (
-        (1, 1, 0.5),
-        (2, 1, 1),
-        (2, 6, 2),
-        (15, 6, 5),
+        (1, 1, 1.5),
+        (1, 6, 0.5),
+        (2, 1, 2.0),
+        (2, 6, 1),
+        (15, 6, 3),
+        (15, 1, 5),
         (1, 3, 1),
         (2, 3, 1.5),
         (3, 3, 2),

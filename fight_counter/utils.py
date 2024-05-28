@@ -20,11 +20,11 @@ def get_clash_factor(
     for key, list_val in clash_data.items():
         if enemies_number in list_val:
             factor = key
-    if players_number < 3:
+    if players_number >= 6:
         if factor == 1.0:
             return 0.5
         return max([i for i in clash_data.keys() if i < factor])
-    if players_number >= 6:
+    if players_number < 3:
         if factor == 4.0:
             return 5.0
         return min([i for i in clash_data.keys() if i > factor])

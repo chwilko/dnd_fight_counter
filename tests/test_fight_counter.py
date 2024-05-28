@@ -26,24 +26,6 @@ def test_sum_player_xp(
 
 
 @pytest.mark.parametrize(
-    "players, enemies_number, expected_factor",
-    (
-        ([1], 6, 1.5),
-        ([1, 1, 1], 6, 2.0),
-        ([1, 1, 1, 1, 1, 1], 6, 2.5),
-        ([1, 1, 1], 20, 4.0),
-        ([1, 1, 1, 1, 1, 1], 20, 5.0),
-        ([1, 1], 1, 0.5),
-    ),
-)
-def test_clash_factor(players: List[int], enemies_number: int, expected_factor: float):
-    counter = FightCounter(
-        players=players, difficulty_level=DifficultyLevelChoose.COMMON
-    )
-    assert counter._get_clash_factor(enemies_number) == expected_factor
-
-
-@pytest.mark.parametrize(
     "players",
     (([1, 1, 1]),),
 )

@@ -67,7 +67,7 @@ def difficulty_counter(
         enemies_number=len(enemies),
         clash_data=clash_data,
     )
-    enemies_xp = int(float(enemies_xp) // clash_factor)
+    enemies_xp = int(float(enemies_xp) * clash_factor)
     return DifficultyState(
         real_enemies_xp=real_enemies_xp,
         enemies_xp=enemies_xp,

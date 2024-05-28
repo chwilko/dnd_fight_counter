@@ -13,7 +13,11 @@ parser.add_argument("players", nargs="*", help="List of players level.", type=in
 
 parser.add_argument("-dl", "--difficulty-level", default=DifficultyLevelChoose.COMMON)
 parser.add_argument(
-    "--enemies-number", nargs="*", help="List of enemy numbers.", default=None, type=int,
+    "--enemies-number",
+    nargs="*",
+    help="List of enemy numbers.",
+    default=None,
+    type=int,
 )
 parser.add_argument("--run-gui", type=bool, default=False)
 
